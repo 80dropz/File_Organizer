@@ -2,14 +2,71 @@ from discord_webhook import DiscordWebhook
 from tkinter import *
 import customtkinter
 import os
+from os import listdir
 import time
 import random
 from customtkinter import filedialog
-logread = open("log.txt", "r")
-logr = logread.read()
+import subprocess
+if not os.path.exists("log.txt"):
+    subprocess.run("setup.py", shell=True)
+    exit()
+else:
+    logr = open("log.txt", "r")
+    logrl = logr.read()
+    logread = logr.readlines()
 direntered = False
 webhook_entered = False
 wanttochange = False
+
+
+
+
+
+
+def organize():
+    entries = os.listdir(directory_path)
+    filelog = open("filelog.txt", "w")
+
+    filenuwd = 0
+    folders = {}
+    executables = {}
+
+    for entry in entries:
+        filenuwd += 1
+        fullfilename = f"File#{filenuwd}"
+        print(f"{fullfilename} = {entry}")
+        filelog.write(f"{fullfilename} = {entry}\n")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def dirask():
@@ -60,10 +117,10 @@ def vertifysetting():
     verifyset.geometry("200x200")
     verifyset.title("Settings")
 
-    webhookcheck = customtkinter.CTkLabel(verifyset, text=f"Webhook: {webhook}", text_color="red")
+    webhookcheck = customtkinter.CTkLabel(verifyset, text=f"Webhook: {webhook_url}", text_color="red")
     webhookcheck.place(relx=0.5, rely=0.2, anchor=CENTER)
 
-    dircheck = customtkinter.CTkLabel(verifyset, text=f"Directory: {dir}", text_color="red")
+    dircheck = customtkinter.CTkLabel(verifyset, text=f"Directory: {directory_path}", text_color="red")
     dircheck.place(relx=0.5, rely=0.4, anchor=CENTER)
 
     goodbtn = customtkinter.CTkButton(verifyset, text="Correct", command=verifysetdestroy, fg_color="green")
@@ -138,24 +195,28 @@ exitbtn.place(relx=0.85, rely=0.0, anchor=N)
 
 checkfileadir = customtkinter.CTkButton(main, text="Check settings", command=vertifysetting)
 checkfileadir.place(relx=0.1, rely=0.8, anchor=CENTER)
-if "Webhook: " in logr and "Directory: " in logr:
-    line1 = logread.readlines()
+
+organizebtn = customtkinter.CTkButton(main, text="Organize", command=organize)
+organizebtn.place(relx=0.5, rely=0.8, anchor=CENTER)
+if "Webhook: " in logrl and "Directory: " in logrl:
+    with open("log.txt", "r") as file:
+        lines = file.readlines()
+
+        if len(lines) >= 2:
+            webhook_url = lines[0].strip().split('Webhook: ')[1]
+            directory_path = lines[1].strip().split('Directory: ')[1]
     webhook_entered = not False
     direntered = not False
-    for linecount in line1:
-        word = linecount.split()
-        print(word)
-        print(logr)
 
     checks1.configure(text="Webhook: Found", text_color="green")
     check2.configure(text="Directory: Found", text_color="green")
-elif "Webhook: " in logr:
+elif "Webhook: " in logrl:
     webhook_entered = not False
     checks1.configure(text="Webhook: Found", text_color="green")
-elif "Directory: " in logr:
+elif "Directory: " in logrl:
     direntered = not False
     check2.configure(text="Directory: Found", text_color="green")
 else:
-    print("No config")
+    subprocess.run("setup.py", shell=True)
 
 main.mainloop()
